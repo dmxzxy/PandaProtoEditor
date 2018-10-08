@@ -1,4 +1,4 @@
-{% extends "main_in_center.html" %} 
+{% extends "main_in_center.html" %}
 
 {% block center_content %}
 
@@ -8,7 +8,6 @@
 	<div class="well well-lg">
 		{% if projects %}
 		<ul class="list-unstyled">
-
 			{% for project in projects %}
 			<li class="index_project_title">
 				<div class="row">
@@ -20,11 +19,40 @@
 						</div>
 					</div>
 					<div class="col-md-4 text-right">
-						<a href="{% url 'project_detail' project.project.id %}" class="btn btn-success btn-large" type="button">编辑</a>
+						<button id="create_project_branche" class="btn btn-success btn-large" type="button">添加分支</button>
 					</div>
 				</div>
 
-			</li> 
+				
+				{% if project.branches %}
+				<div class="well well-large">
+					<div>
+						<h4>branches</h4>
+					</div>
+						<table id="protocal_lists" class="table table-hover">
+							<thead>
+								<tr>
+									<th>#</th>
+									<th>branche name</th>
+									<th>branche url</th>
+								</tr>
+							</thead>
+							<tbody>
+								{% for branche in project.branches %}
+								<tr id="branche.id" title="{{branche.title}}">
+									<td class="show_protocal_detail">{{branche.id}}</td>
+									<td class="show_protocal_detail">{{branche.title}}</td>
+									<td class="show_protocal_detail">{{branche.proto_url}}</td>
+									<td>
+										<a href="{% url 'project_detail' project.project.id %}" class="btn btn-large btn-block btn-primary" type="button">编辑</a>
+									</td>
+								</tr>
+								{% endfor %}
+							</tbody>
+						</table>
+					</div>
+				{% endif %}
+			</li>
 			{% endfor %}
 		</ul>
 		{% else %}
@@ -33,14 +61,15 @@
 	</div>
 	<p />
 
-	<button id="create_project" class="btn btn-success btn-large btn-block"
-		type="button">新项目</button>
+	<button id="create_project" class="btn btn-success btn-large btn-block" type="button">新项目</button>
 </div>
 
 <script>
 
+
+
 </script>
 
-{% include "project_new_dialog.html" %} 
-{% include "project_new_branche_dialog.html" %} 
+{% include "project_new_dialog.html" %}
+{% include "project_new_branche_dialog.html" %}
 {% endblock %}
