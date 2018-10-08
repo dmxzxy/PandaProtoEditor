@@ -6,20 +6,29 @@ from django.db import models
 # Create your models here.
 
 class Lock(models.Model):
-	lock_owner = models.CharField(max_length = 150, black = False)
+	lock_owner = models.CharField(max_length = 150, blank = False)
 	lock_timestamp = models.DateTimeField(auto_now_add = True)
 
-# optional required repeated
+# optional required repeated 这是proto2的基本label类型
 class FieldLabel(models.Model):
     name = models.CharField(max_length = 100, blank = False)
     desc = models.CharField(max_length = 150, blank = False)
     def __unicode__(self):
         return self.name
 
+# Request 客户端发起请求
+# Response 服务器根据客户端发起的一对一的回复
+# Notification 服务器单方面通知客户端的消息
+class ProtocalLabel(models.Model):
+    name = models.CharField(max_length = 100,blank = False)
+    desc = models.CharField(max_length = 150,blank = False)
+    def __unicode__(self):
+        return self.name
+
 #---------------------------------------------------------------------------------
 #         
 class Project(models.Model):
-	title = models.CharField(max_length = 150, black = False)
+	title = models.CharField(max_length = 150, blank = False)
 	namespace = models.CharField(max_length = 150, blank = False, unique = True)
 	timestamp = models.DateTimeField(auto_now_add = True)
 	def __unicode__(self):
@@ -27,8 +36,8 @@ class Project(models.Model):
 
 class ProjectBranche(models.Model):
     project = models.ForeignKey(Project, on_delete = models.CASCADE)
-    title = models.CharField(max_length = 150, black = False)
-    proto_url = models.CharField(max_length = 150, black = False)
+    title = models.CharField(max_length = 150, blank = False)
+    proto_url = models.CharField(max_length = 150, blank = False)
     timestamp = models.DateTimeField(auto_now_add = True)
     def __unicode__(self):
         return self.title
@@ -70,9 +79,11 @@ class Module(models.Model):
 #TYPE_SINT64         = 18;  // Uses ZigZag encoding
 
 class FieldType(models.Model):
-    project = models.ForeignKey(ProjectBranche, on_delete = models.CASCADE)
+    project = models.ForeignKey(ProjectBranche, on_delete = models.CASCADE, null = True, default = None)
     type = models.IntegerField()
     typename = models.CharField(max_length = 150)
+    desc = models.CharField(max_length = 150, blank = False)
+    priority = models.IntegerField(default = 0)
     def __unicode__(self):
         return self.typename
 
@@ -115,3 +126,12 @@ class EnumValue(models.Model):
     number = models.IntegerField()
     def __unicode__(self):
         return self.name
+
+class Protocal(models.Model):
+    message = models.ForeignKey(Message, on_delete = models.CASCADE)
+    protocal_id = models.IntegerField()
+    protocal_ref = models.ForeignKey("Protocal", null = True)
+    protocal_label = models.ForeignKey(ProtocalLabel)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    def __unicode__(self):
+        return self.message.fullname
