@@ -1,0 +1,94 @@
+<div id="project_new_dialog" title="创建项目分支">
+
+	<form class="form-horizontal">
+		<div id="results" class="alert alert-danger" role="alert"></div>
+
+		<fieldset>
+			<div class="control-group">
+				<!-- Text input-->
+				<label class="control-label padding_4px" for="input01">分支代号</label>
+				<div class="controls">
+					<input id="field_branche_title" type="text" placeholder="eg.2018_10_8" class="form-control">
+					<p class="help-block">输入分支的代号</p>
+				</div>
+			</div>
+
+			<div class="control-group">
+				<!-- Text input-->
+				<label class="control-label padding_4px" for="input01">proto的url</label>
+				<div class="controls">
+					<input id="field_branche_url" type="text" placeholder="eg.svn://host/protocal" class="form-control">
+					<p class="help-block">proto的url</p>
+				</div>
+			</div>
+			{% csrf_token %}
+		</fieldset>
+	</form>
+
+</div>
+
+<script>
+	$(document).ready(function () {
+		var dialog_name = "#project_new_dialog";
+
+		$(dialog_name).dialog({
+			modal: true,
+			autoOpen: false,
+			width: "568px",
+			maxWidth: "90%"
+		});
+
+		$("#create_project").click(function (e) {
+
+			e.preventDefault();
+
+			var result_box = $(dialog_name + ' #results');
+
+			result_box.hide();
+
+			//var id = $(this).attr('id');
+
+			$(dialog_name).dialog('option', 'buttons', {
+				"创建": function () {
+					// 打包数据
+					var pack_data = {};
+					pack_data.branche_title = $('#field_branche_title').val();
+					pack_data.branche_url = $('#field_branche_url').val();
+
+					$.ajaxSetup({
+						data: { csrfmiddlewaretoken: '{{ csrf_token }}' },
+					});
+
+					$.post({
+						url: "{% url 'project_create_branche' %}",
+						data: pack_data,
+						success: function () {
+							$(dialog_name).dialog("close");
+
+							location.reload();
+						},
+						error: function (xhr, errmsg, err) {
+							var resp = xhr.responseText.split("TRACEBACK");
+							console.log(xhr.status + ": " + resp[1]);
+							BootstrapDialog.alert({
+								title: 'ERROR',
+								message: resp[0],
+								type: BootstrapDialog.TYPE_DANGER,
+							});
+
+						}
+					});
+
+				},
+				"取消": function () {
+					$(this).dialog("close");
+				}
+			});
+			$(dialog_name).dialog("open");
+			return false;
+		});
+
+
+	});
+
+</script>

@@ -13,14 +13,14 @@
 			<li class="index_project_title">
 				<div class="row">
 					<div class="col-md-8">
-						<h2>{{ project.title }}</h2>
-						<h4>Namespace : {{ project.namespace }}</h4>
+						<h2>{{ project.project.title }}</h2>
+						<h4>Namespace : {{ project.project.namespace }}</h4>
 						<div class="col-md-6 text-right">
-							<h6>---{{ project.timestamp }}</h6>
+							<h6>---{{ project.project.timestamp }}</h6>
 						</div>
 					</div>
 					<div class="col-md-4 text-right">
-						<a href="{% url 'project_detail' project.id %}" class="btn btn-success btn-large" type="button">编辑</a>
+						<a href="{% url 'project_detail' project.project.id %}" class="btn btn-success btn-large" type="button">编辑</a>
 					</div>
 				</div>
 
@@ -42,4 +42,5 @@
 </script>
 
 {% include "project_new_dialog.html" %} 
+{% include "project_new_branche_dialog.html" %} 
 {% endblock %}
