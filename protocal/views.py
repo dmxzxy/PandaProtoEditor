@@ -46,6 +46,17 @@ def project_create(request):
 
 def project_create_branche(request):
 	if request.method == 'POST': 
+		project_id = request.POST['project_id']
+		branche_title = request.POST['branche_title'] 
+		branche_url = request.POST['branche_url'] 
+
+		project = Project.objects.get(id = project_id)
+
+		if project_id and branche_title and branche_url:
+			project = ProjectBranche(project = project, title = strip(branche_title), proto_url = strip(branche_url))
+			project.save()
+		else:
+			raise ValidationError("id or name or url should not be null.")
 
 		return HttpResponse("<h1>Created successfully .</h1>")  
 	else:

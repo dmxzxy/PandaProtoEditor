@@ -46,12 +46,13 @@
 
 			result_box.hide();
 
-			//var id = $(this).attr('id');
+            var id = e.currentTarget.getAttribute("data-id")
 
 			$(dialog_name).dialog('option', 'buttons', {
 				"创建": function () {
 					// 打包数据
 					var pack_data = {};
+					pack_data.project_id = id
 					pack_data.branche_title = $('#field_branche_title').val();
 					pack_data.branche_url = $('#field_branche_url').val();
 
