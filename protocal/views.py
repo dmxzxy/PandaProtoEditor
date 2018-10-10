@@ -50,11 +50,11 @@ def project_create_branche(request):
 		branche_title = request.POST['branche_title'] 
 		branche_url = request.POST['branche_url'] 
 
-		project = Project.objects.get(id = project_id)
+		project = Project.objects.get(pk = project_id)
 
 		if project_id and branche_title and branche_url:
-			project = ProjectBranche(project = project, title = strip(branche_title), proto_url = strip(branche_url))
-			project.save()
+			branche = ProjectBranche(project = project, title = strip(branche_title), proto_url = strip(branche_url))
+			branche.save()
 		else:
 			raise ValidationError("id or name or url should not be null.")
 
@@ -63,5 +63,25 @@ def project_create_branche(request):
 		return HttpResponse("<h1>Invalid request.</h1>")  
 
 
-def project_detail(request, project_id):
-	return HttpResponse("Hello， World!")
+def branche_detail(request, branche_id):
+	cur_branche = get_object_or_404(ProjectBranche, pk = branche_id)
+	modules = Module.objects.filter(project = cur_branche)
+
+	print(modules)
+	return render(request, 'branche_detail.html', 
+	{
+		'cur_branche':cur_branche,
+		'modules':modules,
+	})
+
+
+def branche_help(request, branche_id):
+    cur_branche = get_object_or_404(Project, pk=branche_id)
+    modules = Module.objects.filter(project=cur_branche)
+    messages = Message.objects.filter(module__in=modules).order_by('-timestamp')
+    protocal_labels = ProtocalLabel.objects.all()
+    return render(request, 'project_help.html', {'cur_branche': cur_branche,
+                                                 'modules': modules,
+                                                 'messages': messages,
+                                                 'protocal_labels': protocal_labels,
+                                                 })

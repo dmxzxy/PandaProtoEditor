@@ -9,9 +9,9 @@
             <ul class="sidebar-nav">
                 <li class="sidebar-brand">
                     <a href="#">
-						{% if cur_project %}
-						<a href="{% url 'project_help' cur_project.id %}">
-						    {{ cur_project.title }}
+						{% if cur_branche %}
+						<a href="{% url 'branche_help' cur_branche.id %}">
+						    {{ cur_branche.title }}
 						</a>
 						{% endif %}
                     </a>
@@ -19,26 +19,13 @@
                 
                 <!-- 所有协议 -->
                 <li>
-                    <a href="{% url 'project_detail' cur_project.id %}">
+                    <a href="{% url 'branche_detail' cur_branche.id %}">
                     {% if not cur_module %}
                     =>
                     {% endif %}
                     所有协议
                     </a>
                 </li>
-
-                <!-- 全局协议 -->
-                <li>
-                    <a href="{% url 'module_detail' 0 %}">
-                    {% if cur_module %}
-                    {% if cur_module.id == 0 %}
-                    =>
-                    {% endif %}
-                    {% endif %}
-                    全局模块
-                    </a>
-                </li>
-                
 
 				{% for module in modules %}
 				<li><a href="{% url 'module_detail' module.id %}">
@@ -53,11 +40,8 @@
                 
 				<li><p/></li>
 				<li>
-                    <button id="create_module" class="btn btn-success btn-large btn-block">新增模块</button>
-					<button id="export_project" class="btn btn-primary btn-large btn-block">导出项目</button>
+					<button id="export_project" class="btn btn-success btn-large btn-block">导出项目</button>
                     <button id="sync_proto" class="btn btn-primary btn-large btn-block">同步协议</button>
-<!--                     <button id="export_config" class="btn btn-primary btn-large btn-block">导表工具（临时）</button>
-                    <button id="config_download" class="btn btn-primary btn-large btn-block">配置表下载（临时）</button> -->
 					<button id="admin_system" class="btn btn-danger btn-large btn-block">系统管理</button>
                 </li>
                 
@@ -75,12 +59,6 @@
                     </div>
                 </div>
             </div>
-            
-            {% include "module_new_dialog.html" %} 
-            
-			{% if cur_module %}
-			{# include "protocal_new_dialog.html" #} 
-			{% endif %}
         </div>
         <!-- /#page-content-wrapper -->
 
@@ -93,60 +71,6 @@
             $("#admin_system").click(function(e) {
                 e.preventDefault();
                 location.replace('/admin');
-                return false;
-            });
-            $("#export_project").click(function(e) {
-                e.preventDefault();
-                location.replace("{% url 'project_export' cur_project.id %}");
-                return false;
-            });
-            $("#sync_proto").click(function(e) {
-                e.preventDefault();
-                location.replace("{% url 'project_sync_proto' cur_project.id %}");
-                return false;
-            });
-            $("#config_download").click(function(e) {
-                e.preventDefault();
-                location.replace("{% url 'config_download' %}");
-                return false;
-            });
-            $("#export_config").click(function(e) {
-                e.preventDefault();
-                
-                $.ajaxSetup({
-                    data: {csrfmiddlewaretoken: '{{ csrf_token }}' },
-                });
-                
-                // 打包数据
-                var pack_data = {};                
-                $.post({
-                    url: '{% url 'export_config'%}',
-                    data: pack_data,
-                    success: function() {
-                        BootstrapDialog.alert({
-                            title:'Success',
-                            message:"导出成功",
-                            type: BootstrapDialog.TYPE_SUCCESS,
-                            callback: function(result) {
-                                location.reload();
-                            }
-                        });
-                        
-                    },
-                    error : function(xhr,errmsg,err) {
-                        var resp = xhr.responseText.split("TRACEBACK");
-                        console.log(xhr.status + ": " + resp[1]); 
-                        BootstrapDialog.alert({
-                            title:'ERROR',
-                            message:'导出失败，原因：' + resp[0],
-                            type: BootstrapDialog.TYPE_DANGER,
-                            callback: function(result) {
-                                location.reload();
-                            }
-                        });
-                        
-                    }
-                });
                 return false;
             });
 		});

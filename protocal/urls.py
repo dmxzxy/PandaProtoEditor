@@ -7,5 +7,6 @@ urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'^project/create/$', views.project_create, name='project_create'),
     url(r'^project/create/branche/$', views.project_create_branche, name='project_create_branche'),
-    url(r'^project/(?P<project_id>[0-9]+)/$', views.project_detail, name='project_detail'),
+    url(r'^project/branche/(?P<branche_id>[0-9]+)/$', views.branche_detail, name='branche_detail'),
+    url(r'^project/branche/help/(?P<branche_id>[0-9]+)/$', views.branche_help, name='branche_help'),
 ]
