@@ -76,7 +76,7 @@ def branche_detail(request, branche_id):
 
 
 def branche_help(request, branche_id):
-    cur_branche = get_object_or_404(Project, pk=branche_id)
+    cur_branche = get_object_or_404(ProjectBranche, pk=branche_id)
     modules = Module.objects.filter(project=cur_branche)
     messages = Message.objects.filter(module__in=modules).order_by('-timestamp')
     protocal_labels = ProtocalLabel.objects.all()
