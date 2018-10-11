@@ -132,6 +132,27 @@ class Protocal(models.Model):
     protocal_id = models.IntegerField()
     protocal_ref = models.ForeignKey("Protocal", null = True)
     protocal_label = models.ForeignKey(ProtocalLabel)
-    timestamp = models.DateTimeField(auto_now_add=True)
+    timestamp = models.DateTimeField(auto_now_add = True)
     def __unicode__(self):
-        return protocal_id
+        return self.protocal_id
+
+#---------------------------------------------------------
+
+class ExportHistory(models.Model):
+    project = models.ForeignKey(ProjectBranche, on_delete = models.CASCADE)
+    version = models.CharField(max_length = 100)
+    Export_Status = (
+        (1, "Executing"),
+        (2, "Successfully"),
+        (3, "Failed"),
+    )
+    status = models.IntegerField(choices = Export_Status, default = 1)
+    timestamp = models.DateTimeField(auto_now_add = True)
+    def __unicode__(self):
+        return self.version
+
+class ExportSetting(models.Model):
+    project = models.ForeignKey(ProjectBranche, on_delete = models.CASCADE)
+    export_path = models.CharField(max_length = 300, blank = False)
+    def __unicode__(self):
+        return self.export_path  

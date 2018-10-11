@@ -16,6 +16,9 @@ from string import strip
 
 from protocal.models import *
 
+from export_tool import export_center 
+from sync_tool import sync_proto
+
 # Create your views here.
 
 def index(request):
@@ -86,6 +89,55 @@ def branche_help(request, branche_id):
                                                  'protocal_labels': protocal_labels,
                                                  })
 
+def branche_export(request, branche_id):
+	cur_branche = get_object_or_404(ProjectBranche, pk=branche_id)
+	if request.method == 'POST':
+		export_version = request.POST['export_version'] 
+		export_history = ExportHistory(project=cur_branche, version=export_version, status=1)
+
+		lock = Lock.objects.first()
+
+		if lock:
+			raise Exception('Project is exporting.Wait until exporting done or toggel option [EXPORT FORCE]')
+
+		export_history.save()
+
+		lock = Lock(lock_owner=cur_branche)
+		export_setting = ExportSetting.objects.first()
+		try:
+			export_center.do_export(cur_branche.project, cur_branche, export_version, export_setting)
+			export_history.status = 2
+			export_history.save(update_fields=['status'])
+		except Exception,e:
+			export_history.status = 3
+			export_history.save(update_fields=['status'])
+			raise e
+		finally:
+			lock.delete()
+
+		return HttpResponse("<h1>Export successfully .</h1>")  
+	else:
+		context = {}
+		context['cur_branche'] = cur_branche
+		modules = Module.objects.filter(project = cur_branche)
+		context['modules'] = modules
+		context['message'] = Message.objects.filter(module__in = modules).order_by('-timestamp')
+		context['sugget_version'] = datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
+		return render(request, 'branche_export.html', context)
+
+
+def branche_sync(request, branche_id):
+	cur_branche = get_object_or_404(ProjectBranche, pk=branche_id)
+	if request.method == 'POST':
+		return HttpResponse("<h1>Export successfully .</h1>")  
+	else:
+		context = {}
+		context['cur_branche'] = cur_branche
+		modules = Module.objects.filter(project = cur_branche)
+		context['modules'] = modules
+		context['message'] = Message.objects.filter(module__in = modules).order_by('-timestamp')
+		return render(request, 'branche_sync.html', context)
+
 
 def protocal_detail(request,protocal_id):
     cur_protocal = get_object_or_404(Protocal, pk=protocal_id)
@@ -105,3 +157,4 @@ def protocal_detail(request,protocal_id):
                                                           'cur_protocal':cur_protocal,
                                                           'segments':segments,
                                                           }) 
+

@@ -40,7 +40,7 @@
                 
 				<li><p/></li>
 				<li>
-					<button id="export_project" class="btn btn-success btn-large btn-block">导出项目</button>
+					<button id="export" class="btn btn-success btn-large btn-block">导出项目</button>
                     <button id="sync_proto" class="btn btn-primary btn-large btn-block">同步协议</button>
 					<button id="admin_system" class="btn btn-danger btn-large btn-block">系统管理</button>
                 </li>
@@ -67,6 +67,18 @@
 	
 	<script>
 		$(document).ready(function() {
+
+            $("#export").click(function(e) {
+                e.preventDefault();
+                location.replace('{% url 'branche_export' cur_branche.id %}');
+                return false;
+            });
+
+            $("#sync_proto").click(function(e) {
+                e.preventDefault();
+                location.replace('/admin');
+                return false;
+            });
             
             $("#admin_system").click(function(e) {
                 e.preventDefault();
