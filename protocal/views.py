@@ -86,6 +86,7 @@ def branche_help(request, branche_id):
                                                  'protocal_labels': protocal_labels,
                                                  })
 
+
 def protocal_detail(request,protocal_id):
     cur_protocal = get_object_or_404(Protocal, pk=protocal_id)
     cur_project = cur_protocal.module.project

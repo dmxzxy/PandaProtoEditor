@@ -134,4 +134,4 @@ class Protocal(models.Model):
     protocal_label = models.ForeignKey(ProtocalLabel)
     timestamp = models.DateTimeField(auto_now_add=True)
     def __unicode__(self):
-        return self.message.fullname
+        return protocal_id
