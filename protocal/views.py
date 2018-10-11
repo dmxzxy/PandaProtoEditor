@@ -85,3 +85,22 @@ def branche_help(request, branche_id):
                                                  'messages': messages,
                                                  'protocal_labels': protocal_labels,
                                                  })
+
+def protocal_detail(request,protocal_id):
+    cur_protocal = get_object_or_404(Protocal, pk=protocal_id)
+    cur_project = cur_protocal.module.project
+    innerEnums = Enum.objects.filter(belong = cur_protocal)
+    innerCustomTypes = CustomType.objects.filter(belong = cur_protocal)
+    if len(innerEnums) > 0:
+        cur_protocal.innerEnums = innerEnums
+    if len(innerCustomTypes) > 0:
+        cur_protocal.innerCustomTypes = innerCustomTypes
+    segments = Segment.objects.filter(protocal = cur_protocal)
+
+    cur_protocal_ext = ProtocalExtension.objects.get(protocal_id = cur_protocal.protocal_id)
+    cur_protocal.type = cur_protocal_ext.protocal_type
+    return render(request, 'protocal_detail_dialog.html',{
+                                                          'cur_project':cur_project,
+                                                          'cur_protocal':cur_protocal,
+                                                          'segments':segments,
+                                                          }) 

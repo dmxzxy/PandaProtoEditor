@@ -1,0 +1,145 @@
+{% load segtype %}
+<div>
+<div><strong class="col-md-2">ID</strong><span>{{ cur_protocal.protocal_id }}</span></div>
+<div><strong class="col-md-2">协议</strong><span>{{ cur_protocal.name }}</span></div>
+<div><strong class="col-md-2">模块</strong><span>{{ cur_protocal.module.name }}</span></div>
+<div><strong class="col-md-2">类型 </strong><span>{{ cur_protocal.type }}</span></div>
+{% if cur_protocal.relate_protocal %}
+<div><strong><span class="col-md-2">相关协议 </strong><span><a class="show_relate_protocal_detail">{{ cur_protocal.relate_protocal.name }}</a></span></div>
+{% endif %}
+<div><strong class="col-md-2">描述 </strong><span>{{ cur_protocal.desc }}</span></div>
+</div>
+
+<hr/>
+{% if cur_protocal.innerEnums %}
+<div>
+  <table id="segment_lists" class="table table-hover table-condensed">
+    <caption>子枚举</caption>
+     <tbody>
+        {% for innerEnum in cur_protocal.innerEnums %}
+          <tr>
+            <td><a class='show_enum_segment_class_detail' id = {{innerEnum.type.id}} title={{innerEnum.name}}>{{innerEnum.name}}</a></td>
+          </tr>
+        {% endfor %}
+     </tbody>
+  </table>
+</div>
+{% endif %}
+{% if cur_protocal.innerCustomTypes %}
+<div>
+  <table id="segment_lists" class="table table-hover table-condensed">
+    <caption>子协议</caption>
+     <tbody>
+        {% for innerCustomType in cur_protocal.innerCustomTypes %}
+          <tr>
+            <td><a class='show_segment_class_detail' id = {{innerCustomType.type.id}} title={{innerCustomType.name}}>{{innerCustomType.name}}</a></td>
+          </tr>
+        {% endfor %}
+     </tbody>
+  </table>
+</div>
+{% endif %}
+
+<div>
+  <table id="segment_lists" class="table table-hover">
+  	<caption>协议字段</caption>
+      <thead>
+        <tr>
+           <th>流水号</th>
+           <th>种类</th>
+           <th>类型</th>
+           <th>名字</th>
+           <th>描述</th>
+        </tr>
+     </thead> 
+     <tbody>
+     	  {% for segment in segments %}
+        <tr data-toggle="{{ segment.desc }}" >
+           <td>{{ forloop.counter }}</td>
+           <td class="show_segment_tooltips_class">{{ segment.protocal_type }}</td>
+           <td class="show_segment_tooltips_type">{{ segment|segtype|safe }}</td>
+           <td class="show_segment_tooltips_name">{{ segment.name }}</td>
+           <td class="show_segment_tooltips_name">{{ segment.desc }}</td>
+        </tr>
+  	  {% endfor %}
+     </tbody>
+  </table>
+</div>
+
+
+<div class="control-group text-center">
+  <button id="edit_protocal" class="btn btn-success btn-large btn_120px" val="{% url 'protocal_edit' cur_project.id cur_protocal.id %}" >
+    修改
+  </button>
+</div>
+
+<script>
+$(document).ready(function() {
+	$(".show_relate_protocal_detail").unbind('click').click(function(e) {
+		e.preventDefault();
+		
+		var protocal_id = $(this).parent().attr('id');
+		var parent_url = '{% url 'protocal_detail_parent' %}';
+		var url = parent_url + protocal_id;
+		var dtitle = "协议-" + $(this).parent().attr('title');
+		console.log(url)
+ 		BootstrapDialog.show({
+ 			 title:dtitle,
+		     message: $('<div></div>').load(url)
+		 }); 
+		
+
+		return false;
+	});
+   $(".show_segment_class_detail").unbind('click').click(function(e) {
+      e.preventDefault();
+      
+      var custom_type_id = $(this).attr('id');
+      var parent_url = '{% url 'customtype_detail_by_segment_parent' %}';
+      var url = parent_url + custom_type_id;
+      var dtitle = "自定义类型-" + $(this).attr('title');
+      console.log(url)
+      BootstrapDialog.show({
+          title:dtitle,
+           message: $('<div></div>').load(url)
+       }); 
+      
+
+      return false;
+   });
+   
+   $(".show_enum_segment_class_detail").unbind('click').click(function(e) {
+      e.preventDefault();
+      
+      var segment_id = $(this).attr('id');
+      var parent_url = '{% url 'enum_detail_by_segment_parent' %}';
+      var url = parent_url + segment_id;
+      var dtitle = "枚举-" + $(this).attr('title');
+      console.log(url)
+      BootstrapDialog.show({
+          title:dtitle,
+           message: $('<div></div>').load(url)
+       }); 
+      
+
+      return false;
+   });
+
+   $("#edit_protocal").click(function(e) {
+      e.preventDefault();
+      
+      var url = $(this).attr('val');
+      var dtitle = "协议-" + $(this).attr('name');
+      console.log(url)
+      BootstrapDialog.show({
+          title:dtitle,
+           message: $('<div></div>').load(url)
+       }); 
+      
+
+      return false;
+   });
+});
+
+        
+</script>       
