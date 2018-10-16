@@ -17,7 +17,9 @@ from string import strip
 from protocal.models import *
 
 from export_tool import export_center
-from sync_tool import sync_proto
+from sync_tool import sync_proto_helper
+
+import project_helper
 
 # Create your views here.
 
@@ -41,9 +43,7 @@ def project_create(request):
         project_namespace = request.POST['project_namespace']
 
         if project_name and project_namespace:
-            project = Project(
-                title=strip(project_name), namespace=strip(project_namespace))
-            project.save()
+            project_helper.do_make_project(project_name, project_namespace)
         else:
             raise ValidationError("name or namespace should not be null.")
 
@@ -58,14 +58,9 @@ def project_create_branche(request):
         branche_title = request.POST['branche_title']
         branche_url = request.POST['branche_url']
 
-        project = Project.objects.get(pk=project_id)
-
         if project_id and branche_title and branche_url:
-            branche = ProjectBranche(
-                project=project,
-                title=strip(branche_title),
-                proto_url=strip(branche_url))
-            branche.save()
+            project_helper.do_make_branche(project_id, branche_title,
+                                           branche_url)
         else:
             raise ValidationError("id or name or url should not be null.")
 
@@ -151,7 +146,7 @@ def branche_sync(request, branche_id):
 
         # lock = Lock(lock_owner="sync_proto_"+cur_branche)
         try:
-            sync_proto.do_sync(cur_branche.project, cur_branche)
+            sync_proto_helper.sync(cur_branche.project, cur_branche)
         except Exception, e:
             raise e
         finally:

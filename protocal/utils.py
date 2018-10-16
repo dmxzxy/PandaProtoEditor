@@ -22,29 +22,20 @@ def cmd_call(cmd):
     return (stdoutput, erroutput)
 
 
-def is_sub_string(SubStrList, Str):
-    flag = True
-    for substr in SubStrList:
-        if not (substr in Str):
-            flag = False
-
-    return flag
-
-
-def get_file_list(FindPath, FlagStr=[]):
-    FileList = []
-    FileNames = os.listdir(FindPath)
-    if (len(FileNames) > 0):
-        for fn in FileNames:
-            if (len(FlagStr) > 0):
-                if (is_sub_string(FlagStr, fn)):
-                    fullfilename = os.path.join(FindPath, fn)
-                    FileList.append(fullfilename)
+def get_file_list(find_path, suffix):
+    findlist = []
+    file_names = os.listdir(find_path)
+    if (len(file_names) > 0):
+        for fn in file_names:
+            if (len(suffix) > 0):
+                if fn.endswith(suffix):
+                    fullfilename = os.path.join(find_path, fn)
+                    findlist.append(fullfilename)
             else:
-                fullfilename = os.path.join(FindPath, fn)
-                FileList.append(fullfilename)
+                fullfilename = os.path.join(find_path, fn)
+                findlist.append(fullfilename)
 
-    if (len(FileList) > 0):
-        FileList.sort()
+    if (len(findlist) > 0):
+        findlist.sort()
 
-    return FileList
+    return findlist
