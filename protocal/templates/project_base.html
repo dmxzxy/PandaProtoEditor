@@ -76,7 +76,7 @@
 
             $("#sync_proto").click(function(e) {
                 e.preventDefault();
-                location.replace('/admin');
+                location.replace('{% url 'branche_sync' cur_branche.id %}');
                 return false;
             });
             

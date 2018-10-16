@@ -138,6 +138,7 @@ class Protocal(models.Model):
 
 #---------------------------------------------------------
 
+
 class ExportHistory(models.Model):
     project = models.ForeignKey(ProjectBranche, on_delete = models.CASCADE)
     version = models.CharField(max_length = 100)
@@ -151,8 +152,20 @@ class ExportHistory(models.Model):
     def __unicode__(self):
         return self.version
 
+
 class ExportSetting(models.Model):
     project = models.ForeignKey(ProjectBranche, on_delete = models.CASCADE)
     export_path = models.CharField(max_length = 300, blank = False)
     def __unicode__(self):
         return self.export_path  
+
+
+class SyncHistory(models.Model):
+    project = models.ForeignKey(ProjectBranche, on_delete = models.CASCADE)
+    Sync_Status = (
+        (1, "Executing"),
+        (2, "Successfully"),
+        (3, "Failed"),
+    )
+    status = models.IntegerField(choices = Sync_Status, default = 1)
+    timestamp = models.DateTimeField(auto_now_add = True)
