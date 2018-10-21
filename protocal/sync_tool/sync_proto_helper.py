@@ -83,7 +83,7 @@ def sync(project, branche):
 
     do_update_proto(context)
 
-    do_parse_proto_files(context)
+    #do_parse_proto_files(context)
 
     with open(setting.proto_parse_path + '/' + 'parse.json', 'r') as load_f:
         proto_parse_dict = json.load(load_f)

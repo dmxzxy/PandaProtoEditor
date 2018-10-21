@@ -14,14 +14,9 @@
    	{% for protocal in protocals %}
       <tr  id="{{ protocal.id }}" title="{{ protocal.name }}">
          <td class="show_protocal_detail">{{ protocal.protocal_id }}</td>
-         <td class="show_protocal_detail">{{ protocal.name }}</td>
-         <td class="show_protocal_detail">{{ protocal.type.name }}</td>
-         <td class="show_protocal_detail">{{ protocal.desc }}</td>
-         <td>
-         <a id="edit_protocal_segments" href="{% url 'segments_detail' protocal.id %}" class="btn btn-primary btn-large" val="{{ protocal.id }}">编辑字段</a>
-         <button class="edit_protocal btn btn-success btn-large" val="{% url 'protocal_edit' cur_project.id protocal.id %}" name="{{ protocal.name }}">修改</button>
-         <button class="delete_protocal btn btn-danger btn-large" val="{{protocal.id}}" name = "{{ protocal.name }}">删除</button>
-         </td>
+         <td class="show_protocal_detail">{{ protocal.message.name }}</td>
+         <td class="show_protocal_detail">{{ protocal.protocal_label.name }}</td>
+         <td class="show_protocal_detail">{{ protocal.message.desc }}</td>
       </tr>
 	  {% endfor %}
    </tbody>
@@ -33,7 +28,7 @@ $(document).ready(function() {
 		e.preventDefault();
 		
 		var protocal_id = $(this).parent().attr('id');
-		var parent_url = '{% url 'protocal_detail_parent' %}';
+		var parent_url = "{% url 'protocal_detail_parent' %}";
 		var url = parent_url + protocal_id;
 		var dtitle = "协议-" + $(this).parent().attr('title');
 		console.log(url)
@@ -45,20 +40,6 @@ $(document).ready(function() {
 
 		return false;
 	});
-   $(".edit_protocal").click(function(e) {
-      e.preventDefault();
-      
-      var url = $(this).attr('val');
-      var dtitle = "协议-" + $(this).attr('name');
-      console.log(url)
-      BootstrapDialog.show({
-          title:dtitle,
-           message: $('<div></div>').load(url)
-       }); 
-      
-
-      return false;
-   });
 });
 
         

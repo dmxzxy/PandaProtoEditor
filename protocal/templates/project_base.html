@@ -28,12 +28,12 @@
                 </li>
 
 				{% for module in modules %}
-				<li><a href="{% url 'module_detail' module.id %}">
+				<li><a href="{% url 'branche_detail' module.id %}">
 				{% if cur_module.id == module.id %}
                 =>
                 {% endif %}
 				
-				{{ module.namedesc }}
+				{{ module.desc }}
 				
 				</a></li>
 				{% endfor %}

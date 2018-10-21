@@ -1,1 +1,1 @@
-@python %~dp0parse
+@python2 %~dp0parse

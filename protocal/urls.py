@@ -15,4 +15,6 @@ urlpatterns = [
  
     url(r'^protocal/$', views.index, name='protocal_detail_parent'),
     url(r'^protocal/(?P<protocal_id>[0-9]+)$', views.protocal_detail, name='protocal_detail'),
+    
+    url(r'^module/(?P<module_id>[0-9]+)$', views.module_detail, name='module_detail'),
 ]

@@ -20,7 +20,7 @@ class FieldLabel(models.Model):
 # Response 服务器根据客户端发起的一对一的回复
 # Notification 服务器单方面通知客户端的消息
 class ProtocalLabel(models.Model):
-    name = models.CharField(max_length = 100,blank = False)
+    name = models.CharField(max_length = 100,blank = False, unique = True)
     desc = models.CharField(max_length = 150,blank = False)
     def __unicode__(self):
         return self.name
@@ -79,7 +79,7 @@ class Module(models.Model):
 #TYPE_SINT64         = 18;  // Uses ZigZag encoding
 
 class FieldType(models.Model):
-    project = models.ForeignKey(ProjectBranche, on_delete = models.CASCADE, null = True, default = None)
+    module = models.ForeignKey(Module, on_delete = models.CASCADE, null = True, default = None)
     type = models.IntegerField()
     typename = models.CharField(max_length = 150)
     desc = models.CharField(max_length = 150, blank = False)
@@ -128,7 +128,7 @@ class EnumValue(models.Model):
         return self.name
 
 class Protocal(models.Model):
-    message = models.ForeignKey(Message, on_delete = models.CASCADE)
+    message = models.OneToOneField(Message, on_delete = models.CASCADE)
     protocal_id = models.IntegerField()
     protocal_ref = models.ForeignKey("Protocal", null = True)
     protocal_label = models.ForeignKey(ProtocalLabel)

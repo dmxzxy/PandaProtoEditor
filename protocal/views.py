@@ -73,10 +73,16 @@ def branche_detail(request, branche_id):
     cur_branche = get_object_or_404(ProjectBranche, pk=branche_id)
     modules = Module.objects.filter(project=cur_branche)
 
-    print(modules)
+    messages = Message.objects.filter(module__in=modules)
+    enums = Enum.objects.filter(module__in=modules)
+    protocals = Protocal.objects.filter(message__in=messages).order_by('protocal_id')
+
     return render(request, 'branche_detail.html', {
         'cur_branche': cur_branche,
         'modules': modules,
+        'protocals': protocals,
+        'messages': messages,
+        'enums': enums,
     })
 
 
@@ -185,3 +191,21 @@ def protocal_detail(request, protocal_id):
             'cur_protocal': cur_protocal,
             'segments': segments,
         })
+
+
+def module_detail(request, module_id):
+    cur_module = get_object_or_404(Module, pk=module_id)
+    cur_branche = cur_module.project
+
+    modules = Module.objects.filter(project=cur_branche)
+    messages = Message.objects.filter(module=cur_module)
+    enums = Enum.objects.filter(module=cur_module)
+    protocals = Protocal.objects.filter(message__in=messages).order_by('protocal_id')
+
+    return render(request, 'branche_detail.html', {
+        'cur_branche': cur_branche,
+        'modules': modules,
+        'protocals': protocals,
+        'messages': messages,
+        'enums': enums,
+    })
