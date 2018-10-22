@@ -1,38 +1,38 @@
 {% load segtype %}
 <div>
 <div><strong class="col-md-2">ID</strong><span>{{ cur_protocal.protocal_id }}</span></div>
-<div><strong class="col-md-2">协议</strong><span>{{ cur_protocal.name }}</span></div>
-<div><strong class="col-md-2">模块</strong><span>{{ cur_protocal.module.name }}</span></div>
-<div><strong class="col-md-2">类型 </strong><span>{{ cur_protocal.type }}</span></div>
+<div><strong class="col-md-2">协议</strong><span>{{ cur_protocal.message.name }}</span></div>
+<div><strong class="col-md-2">模块</strong><span>{{ cur_protocal.message.module.name }}</span></div>
+<div><strong class="col-md-2">类型 </strong><span>{{ cur_protocal.protocal_label }}</span></div>
 {% if cur_protocal.relate_protocal %}
 <div><strong><span class="col-md-2">相关协议 </strong><span><a class="show_relate_protocal_detail">{{ cur_protocal.relate_protocal.name }}</a></span></div>
 {% endif %}
-<div><strong class="col-md-2">描述 </strong><span>{{ cur_protocal.desc }}</span></div>
+<div><strong class="col-md-2">描述 </strong><span>{{ cur_protocal.message.desc }}</span></div>
 </div>
 
 <hr/>
-{% if cur_protocal.innerEnums %}
+{% if cur_protocal.nestEnums %}
 <div>
   <table id="segment_lists" class="table table-hover table-condensed">
     <caption>子枚举</caption>
      <tbody>
-        {% for innerEnum in cur_protocal.innerEnums %}
+        {% for enum in cur_protocal.nestEnums %}
           <tr>
-            <td><a class='show_enum_segment_class_detail' id = {{innerEnum.type.id}} title={{innerEnum.name}}>{{innerEnum.name}}</a></td>
+            <td><a class='show_enum_detail' id = {{enum.type.id}} title={{enum.name}}>{{enum.name}}</a></td>
           </tr>
         {% endfor %}
      </tbody>
   </table>
 </div>
 {% endif %}
-{% if cur_protocal.innerCustomTypes %}
+{% if cur_protocal.nestMessage %}
 <div>
   <table id="segment_lists" class="table table-hover table-condensed">
     <caption>子协议</caption>
      <tbody>
-        {% for innerCustomType in cur_protocal.innerCustomTypes %}
+        {% for message in cur_protocal.nestMessage %}
           <tr>
-            <td><a class='show_segment_class_detail' id = {{innerCustomType.type.id}} title={{innerCustomType.name}}>{{innerCustomType.name}}</a></td>
+            <td><a class='show_message_detail' id = {{message.type.id}} title={{message.name}}>{{message.name}}</a></td>
           </tr>
         {% endfor %}
      </tbody>
@@ -45,7 +45,7 @@
   	<caption>协议字段</caption>
       <thead>
         <tr>
-           <th>流水号</th>
+           <th>#</th>
            <th>种类</th>
            <th>类型</th>
            <th>名字</th>
@@ -53,13 +53,13 @@
         </tr>
      </thead> 
      <tbody>
-     	  {% for segment in segments %}
-        <tr data-toggle="{{ segment.desc }}" >
-           <td>{{ forloop.counter }}</td>
-           <td class="show_segment_tooltips_class">{{ segment.protocal_type }}</td>
-           <td class="show_segment_tooltips_type">{{ segment|segtype|safe }}</td>
-           <td class="show_segment_tooltips_name">{{ segment.name }}</td>
-           <td class="show_segment_tooltips_name">{{ segment.desc }}</td>
+     	  {% for field in fields %}
+        <tr data-toggle="{{ field.desc }}" >
+           <td>{{ field.number }}</td>
+           <td class="show_segment_tooltips_class">{{ field.label }}</td>
+           <td class="show_segment_tooltips_type">{{ field|segtype|safe }}</td>
+           <td class="show_segment_tooltips_name">{{ field.name }}</td>
+           <td class="show_segment_tooltips_name">{{ field.desc }}</td>
         </tr>
   	  {% endfor %}
      </tbody>
@@ -67,69 +67,48 @@
 </div>
 
 
-<div class="control-group text-center">
-  <button id="edit_protocal" class="btn btn-success btn-large btn_120px" val="{% url 'protocal_edit' cur_project.id cur_protocal.id %}" >
-    修改
-  </button>
-</div>
-
 <script>
 $(document).ready(function() {
 	$(".show_relate_protocal_detail").unbind('click').click(function(e) {
 		e.preventDefault();
 		
 		var protocal_id = $(this).parent().attr('id');
-		var parent_url = '{% url 'protocal_detail_parent' %}';
+		var parent_url = '{% url "protocal_detail_parent" %}';
 		var url = parent_url + protocal_id;
 		var dtitle = "协议-" + $(this).parent().attr('title');
 		console.log(url)
  		BootstrapDialog.show({
- 			 title:dtitle,
-		     message: $('<div></div>').load(url)
+ 			  title:dtitle,
+		    message: $('<div></div>').load(url)
 		 }); 
 		
 
 		return false;
 	});
-   $(".show_segment_class_detail").unbind('click').click(function(e) {
+   $(".show_message_detail").unbind('click').click(function(e) {
       e.preventDefault();
       
-      var custom_type_id = $(this).attr('id');
-      var parent_url = '{% url 'customtype_detail_by_segment_parent' %}';
-      var url = parent_url + custom_type_id;
-      var dtitle = "自定义类型-" + $(this).attr('title');
+      var message_key = $(this).attr('id');
+      var parent_url = '{% url "message_detail_parent" %}';
+      var url = parent_url + message_key;
+      var dtitle = "信息-" + $(this).attr('title');
       console.log(url)
       BootstrapDialog.show({
           title:dtitle,
-           message: $('<div></div>').load(url)
+          message: $('<div></div>').load(url)
        }); 
       
 
       return false;
    });
    
-   $(".show_enum_segment_class_detail").unbind('click').click(function(e) {
+   $(".show_enum_detail").unbind('click').click(function(e) {
       e.preventDefault();
       
       var segment_id = $(this).attr('id');
-      var parent_url = '{% url 'enum_detail_by_segment_parent' %}';
+      var parent_url = '{% url "protocal_detail_parent" %}';
       var url = parent_url + segment_id;
       var dtitle = "枚举-" + $(this).attr('title');
-      console.log(url)
-      BootstrapDialog.show({
-          title:dtitle,
-           message: $('<div></div>').load(url)
-       }); 
-      
-
-      return false;
-   });
-
-   $("#edit_protocal").click(function(e) {
-      e.preventDefault();
-      
-      var url = $(this).attr('val');
-      var dtitle = "协议-" + $(this).attr('name');
       console.log(url)
       BootstrapDialog.show({
           title:dtitle,

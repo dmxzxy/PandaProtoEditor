@@ -14,7 +14,13 @@ urlpatterns = [
     url(r'^project/branche/sync/(?P<branche_id>[0-9]+)/$', views.branche_sync, name='branche_sync'),
  
     url(r'^protocal/$', views.index, name='protocal_detail_parent'),
-    url(r'^protocal/(?P<protocal_id>[0-9]+)$', views.protocal_detail, name='protocal_detail'),
+    url(r'^protocal/(?P<protocal_key>.*)$', views.protocal_detail, name='protocal_detail'),
+    
+    url(r'^message/$', views.index, name='message_detail_parent'),
+    url(r'^message/(?P<message_key>.*)$', views.message_detail, name='message_detail'),
+
+    url(r'^enum/$', views.index, name='enum_detail_parent'),
+    url(r'^enum/(?P<enum_key>.*)$', views.enum_detail, name='enum_detail'),
     
     url(r'^module/(?P<module_id>[0-9]+)$', views.module_detail, name='module_detail'),
 ]

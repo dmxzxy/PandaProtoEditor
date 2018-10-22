@@ -47,7 +47,8 @@ LabelName = {
 
 
 class MessageParseDefault():
-    def __init__(self, message_dict):
+    def __init__(self, context, message_dict):
+        self.context = context
         self.message_dict = message_dict
 
     def is_protocal(self):
@@ -60,6 +61,16 @@ class MessageParseDefault():
         return len(ids) > 0
 
     def get_protocal_id(self):
+        proto_ids_parse = self.context.proto_ids_parse
+        message_name = self.message_dict['name'].lower()
+        if message_name in proto_ids_parse:
+            id = proto_ids_parse[message_name]['id']
+            if id is not None:
+                return id
+        else:
+            print(message_name + " can not find id")
+            return 0
+
         message_desc = self.message_dict['desc']
         ids = re.findall(r'_id\("(.*?)"\)', message_desc, re.MULTILINE)
         if len(ids) > 0:
@@ -132,7 +143,7 @@ def _do_sync_message(context, module, nested_msg, message_dict):
         nested=nested_msg
     )
 
-    parse = MessageParseDefault(message_dict)
+    parse = MessageParseDefault(context, message_dict)
     if parse.is_protocal():
         protocal = Protocal(
             message=message,

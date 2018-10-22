@@ -7,12 +7,11 @@
          <th>名字</th>
          <th>类型</th>
          <th>描述</th>
-         <th class='col-sm-3'>  </th>
       </tr>
    </thead>
    <tbody>
    	{% for protocal in protocals %}
-      <tr  id="{{ protocal.id }}" title="{{ protocal.name }}">
+      <tr  id="{{ protocal.message.fullname }}" title="{{ protocal.message.name }}">
          <td class="show_protocal_detail">{{ protocal.protocal_id }}</td>
          <td class="show_protocal_detail">{{ protocal.message.name }}</td>
          <td class="show_protocal_detail">{{ protocal.protocal_label.name }}</td>

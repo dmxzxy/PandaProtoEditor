@@ -171,26 +171,48 @@ def branche_sync(request, branche_id):
         return render(request, 'branche_sync.html', context)
 
 
-def protocal_detail(request, protocal_id):
-    cur_protocal = get_object_or_404(Protocal, pk=protocal_id)
-    cur_project = cur_protocal.module.project
-    innerEnums = Enum.objects.filter(belong=cur_protocal)
-    innerCustomTypes = CustomType.objects.filter(belong=cur_protocal)
-    if len(innerEnums) > 0:
-        cur_protocal.innerEnums = innerEnums
-    if len(innerCustomTypes) > 0:
-        cur_protocal.innerCustomTypes = innerCustomTypes
-    segments = Segment.objects.filter(protocal=cur_protocal)
+def protocal_detail(request, protocal_key):
+    cur_message = get_object_or_404(Message, fullname=protocal_key)
+    cur_protocal = get_object_or_404(Protocal, message=cur_message)
+    cur_module = cur_message.module
+    cur_branche = cur_module.project
+    # innerEnums = Enum.objects.filter(belong=cur_protocal)
+    # innerCustomTypes = CustomType.objects.filter(belong=cur_protocal)
+    # if len(innerEnums) > 0:
+    #     cur_protocal.innerEnums = innerEnums
+    # if len(innerCustomTypes) > 0:
+    #     cur_protocal.innerCustomTypes = innerCustomTypes
+    # segments = Segment.objects.filter(protocal=cur_protocal)
 
-    cur_protocal_ext = ProtocalExtension.objects.get(
-        protocal_id=cur_protocal.protocal_id)
-    cur_protocal.type = cur_protocal_ext.protocal_type
+    # cur_protocal_ext = ProtocalExtension.objects.get(
+    #     protocal_id=cur_protocal.protocal_id)
+    # cur_protocal.type = cur_protocal_ext.protocal_type
+    fields = Field.objects.filter(message=cur_message).order_by('number')
     return render(
         request, 'protocal_detail_dialog.html', {
-            'cur_project': cur_project,
+            'cur_branche': cur_branche,
+            'cur_module': cur_module,
             'cur_protocal': cur_protocal,
-            'segments': segments,
+            'fields': fields,
         })
+
+
+def message_detail(request, message_key):
+    cur_message = get_object_or_404(Message, fullname=message_key)
+    cur_module = cur_message.module
+    cur_branche = cur_module.project
+    fields = Field.objects.filter(message=cur_message).order_by('number')
+    return render(
+        request, 'message_detail_dialog.html', {
+            'cur_branche': cur_branche,
+            'cur_module': cur_module,
+            'cur_message': cur_message,
+            'fields': fields,
+        })
+
+
+def enum_detail(request, enum_key):
+    pass
 
 
 def module_detail(request, module_id):
@@ -209,3 +231,4 @@ def module_detail(request, module_id):
         'messages': messages,
         'enums': enums,
     })
+
