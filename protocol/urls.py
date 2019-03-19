@@ -14,13 +14,13 @@ urlpatterns = [
     url(r'^project/branch/sync/(?P<branch_id>[0-9]+)/$', views.branch_sync, name='branch_sync'),
  
     url(r'^protocol/$', views.index, name='protocol_detail_parent'),
-    url(r'^protocol/(?P<protocol_key>.*)$', views.protocol_detail, name='protocol_detail'),
+    url(r'^protocol/(?P<branch_id>[0-9]+)/(?P<protocol_key>.*)$', views.protocol_detail, name='protocol_detail'),
     
     url(r'^message/$', views.index, name='message_detail_parent'),
-    url(r'^message/(?P<message_key>.*)$', views.message_detail, name='message_detail'),
+    url(r'^message/(?P<branch_id>[0-9]+)/(?P<message_key>.*)$', views.message_detail, name='message_detail'),
 
     url(r'^enum/$', views.index, name='enum_detail_parent'),
-    url(r'^enum/(?P<enum_key>.*)$', views.enum_detail, name='enum_detail'),
+    url(r'^enum/(?P<branch_id>[0-9]+)/(?P<enum_key>.*)$', views.enum_detail, name='enum_detail'),
     
-    url(r'^module/(?P<module_id>[0-9]+)$', views.module_detail, name='module_detail'),
+    url(r'^module/(?P<branch_id>[0-9]+)/(?P<module_id>[0-9]+)$', views.module_detail, name='module_detail'),
 ]

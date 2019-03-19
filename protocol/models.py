@@ -49,7 +49,7 @@ class Module(models.Model):
     fullname = models.CharField(max_length = 100, blank = False)
     desc = models.CharField(max_length = 150,blank = False)
     def __unicode__(self):
-        return self.name
+        return self
 
 
 #// 0 is reserved for errors.

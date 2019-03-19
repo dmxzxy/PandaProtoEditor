@@ -67,12 +67,12 @@
 		      </tr>
 		   </thead>
 		   <tbody>
-		   	  {% for exported_project in exported_projects %}
-		      <tr  id="{{ exported_project.id }}" title="{{ exported_project.title }}">
-		         <td>{{ exported_project.timestamp }}</td>
-		         <td>{{ exported_project.project }}</td>
-		         <td>{{ exported_project.version }}</td>
-		         <td>{{ exported_project.get_status_display }}</td>
+		   	  {% for history in history_list %}
+		      <tr  id="{{ history.id }}" title="{{ history.title }}">
+		         <td>{{ history.timestamp }}</td>
+		         <td>{{ history.project }}</td>
+		         <td>{{ history.version }}</td>
+		         <td>{{ history.get_status_display }}</td>
 		      </tr>
 			  {% endfor %}
 		   </tbody>

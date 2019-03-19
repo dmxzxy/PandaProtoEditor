@@ -8,12 +8,15 @@ def segtype_a(field_type):
     names = field_type.typename.split('.')
     field_type_name = names[len(names) - 1]
 
+
     if field_type.type == 11:
-        return "<a class='show_message_detail' id='%s' title='%s'>%s</a>" % (
-            field_type.typename, field_type_name, field_type_name)
+        branch = field_type.module.project
+        return "<a class='show_child_message_detail' id='%s' val='%s' title='%s'>%s</a>" % (
+            field_type.typename, branch.id, field_type_name, field_type_name)
     elif field_type.type == 14:
-        return "<a class='show_enum_detail' id='%s' title='%s'>%s</a>" % (
-            field_type.typename, field_type_name, field_type_name)
+        branch = field_type.module.project
+        return "<a class='show_child_enum_detail' id='%s' val='%s' title='%s'>%s</a>" % (
+            field_type.typename, branch.id, field_type_name, field_type_name)
     elif field_type.type == 10:
         return "group"
     else:

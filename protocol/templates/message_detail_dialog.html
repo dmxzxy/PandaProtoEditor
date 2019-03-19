@@ -1,9 +1,9 @@
 {% load segtype %}
 <div>
-<div><strong class="col-md-2">信息</strong><span>{{ cur_message.name }}</span></div>
+<div><strong class="col-md-2">结构</strong><span>{{ cur_message.name }}</span></div>
 <div><strong class="col-md-2">模块</strong><span>{{ cur_message.module.name }}</span></div>
 {% if cur_message.nested %}
-<div><strong><span class="col-md-2">所属</strong><span><a class="show_relate_protocol_detail">{{ cur_protocol.relate_protocol.name }}</a></span></div>
+<div><strong><span class="col-md-2">所属</strong><span><a class="show_nested_message_detail" id="{{ cur_message.nested.id }}" val="{{cur_branch.id}}">{{ cur_message.nested.name }}</a></span></div>
 {% endif %}
 <div><strong class="col-md-2">描述 </strong><span>{{ cur_message.desc }}</span></div>
 </div>
@@ -12,7 +12,7 @@
 
 <div>
   <table id="field_lists" class="table table-hover">
-  	<caption>信息字段</caption>
+  	<caption>结构字段</caption>
       <thead>
         <tr>
            <th>#</th>
@@ -39,36 +39,40 @@
 
 <script>
 $(document).ready(function() {
-   $(".show_message_detail").unbind('click').click(function(e) {
+   $(".show_nested_message_detail").unbind('click').click(function(e) {
       e.preventDefault();
       
+      var branch_key = $(this).attr('val');
       var message_key = $(this).attr('id');
       var parent_url = '{% url "message_detail_parent" %}';
-      var url = parent_url + message_key;
-      var dtitle = "信息-" + $(this).attr('title');
+      var url = parent_url + branch_key + message_key;
+      var dtitle = "结构-" + $(this).attr('title');
       console.log(url)
       BootstrapDialog.show({
-          title:dtitle,
-          message: $('<div></div>').load(url)
-       }); 
-      
+            title:dtitle,
+            size: BootstrapDialog.SIZE_WIDE,
+            message: $('<div></div>').load(url)
+      }); 
 
       return false;
    });
    
-   $(".show_enum_detail").unbind('click').click(function(e) {
+   $(".show_child_message_detail").unbind('click').click(function(e) {
       e.preventDefault();
       
-      var segment_id = $(this).attr('id');
-      var parent_url = '{% url "protocol_detail_parent" %}';
-      var url = parent_url + segment_id;
-      var dtitle = "枚举-" + $(this).attr('title');
+      var branch_key = $(this).attr('val');
+      var message_key = $(this).attr('id');
+      var parent_url = '{% url "message_detail_parent" %}';
+      var url = parent_url + branch_key + "/" + message_key;
+      var dtitle = "结构-" + $(this).attr('title');
       console.log(url)
       BootstrapDialog.show({
-          title:dtitle,
-           message: $('<div></div>').load(url)
+            title:dtitle,
+            size: BootstrapDialog.SIZE_WIDE,
+            message: $('<div></div>').load(url)
        }); 
       
+
       return false;
    });
 });

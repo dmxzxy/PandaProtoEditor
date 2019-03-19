@@ -11,11 +11,11 @@
    </thead>
    <tbody>
    	{% for protocol in protocols %}
-      <tr  id="{{ protocol.message.fullname }}" title="{{ protocol.message.name }}">
-         <td class="show_protocol_detail">{{ protocol.protocol_id }}</td>
-         <td class="show_protocol_detail">{{ protocol.message.name }}</td>
-         <td class="show_protocol_detail">{{ protocol.protocol_label.name }}</td>
-         <td class="show_protocol_detail">{{ protocol.message.desc }}</td>
+      <tr  id="{{ protocol.message.fullname }}", val ="{{cur_branch.id}}" title="{{ protocol.message.name }}">
+         <td class="show_list_protocol_detail">{{ protocol.protocol_id }}</td>
+         <td class="show_list_protocol_detail">{{ protocol.message.name }}</td>
+         <td class="show_list_protocol_detail">{{ protocol.protocol_label.name }}</td>
+         <td class="show_list_protocol_detail">{{ protocol.message.desc }}</td>
       </tr>
 	  {% endfor %}
    </tbody>
@@ -23,17 +23,19 @@
 
 <script>
 $(document).ready(function() {
-	$(".show_protocol_detail").click(function(e) {
+	$(".show_list_protocol_detail").click(function(e) {
 		e.preventDefault();
 		
-		var protocol_id = $(this).parent().attr('id');
+		var branch_key = $(this).parent().attr('val');
+		var protocol_key = $(this).parent().attr('id');
 		var parent_url = "{% url 'protocol_detail_parent' %}";
-		var url = parent_url + protocol_id;
+		var url = parent_url + branch_key + "/" + protocol_key;
 		var dtitle = "协议-" + $(this).parent().attr('title');
 		console.log(url)
  		BootstrapDialog.show({
- 			 title:dtitle,
-		     message: $('<div></div>').load(url)
+ 			   title:dtitle,
+            size: BootstrapDialog.SIZE_WIDE,
+		      message: $('<div></div>').load(url)
 		 }); 
 		
 

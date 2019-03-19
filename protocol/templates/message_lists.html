@@ -1,0 +1,66 @@
+
+<div id="message_lists_dialog" title = "结构">
+    <table id="message_lists" class="table table-hover">
+       <thead>
+          <tr>
+             <th>名字</th>
+             <th>描述</th>
+             <th>所属协议</th>
+          </tr>
+       </thead>
+       <tbody>
+            {% for message in messages %}
+            <tr  id="{{ message.fullname }}" val ="{{cur_branch.id}}" title="{{ message.name }}">
+                <td class="show_message_detail">{{ message.name }}</td>
+                <td class="show_message_detail">{{ message.desc }}</td>
+                {% if message.nested %}
+                <td class="show_message_belong_detail" id="{{message.nested.id}}" val="{{cur_branch.id}}" name = "{{ message.nested.name }}"><a>{{ message.nested.name }}</a></td>
+                {% else %}
+                <td class="show_message_detail">无</td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+       </tbody>
+    </table>
+</div>
+    
+    <script>
+    $(document).ready(function() {
+        $(".show_message_detail").click(function(e) {
+            e.preventDefault();
+            
+            var branch_key = $(this).parent().attr('val');
+            var message_key = $(this).parent().attr('id');
+            var parent_url = '{% url 'message_detail_parent' %}';
+            var url = parent_url + branch_key + "/" + message_key;
+            var dtitle = "结构-" + $(this).parent().attr('title');
+            // console.log(url)
+            BootstrapDialog.show({
+                title:dtitle,
+                message: $('<div></div>').load(url)
+            }); 
+            
+            return false;
+        });
+        
+        $(".show_message_belong_detail").click(function(e) {
+            e.preventDefault();
+            
+            var branch_key = $(this).parent().attr('val');
+            var message_key = $(this).parent().attr('id');
+            var parent_url = '{% url 'protocol_detail_parent' %}';
+            var url = parent_url + branch_key + "/" + message_key;
+            var dtitle = "协议-" + $(this).attr('name');
+            // console.log(url)
+            BootstrapDialog.show({
+                title:dtitle,
+                message: $('<div></div>').load(url)
+            }); 
+            
+    
+            return false;
+        });
+    });
+    
+            
+    </script>        

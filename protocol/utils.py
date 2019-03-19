@@ -39,3 +39,17 @@ def get_file_list(find_path, suffix):
         findlist.sort()
 
     return findlist
+
+def try_parse_int(s):
+    try:
+        return int(s)
+    except ValueError:
+        pass
+
+    try:
+        import unicodedata
+        return unicodedata.numeric(s)
+    except (TypeError, ValueError):
+        pass
+
+    return False

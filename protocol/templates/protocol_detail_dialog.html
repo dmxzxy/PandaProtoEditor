@@ -18,7 +18,7 @@
      <tbody>
         {% for enum in cur_protocol.nestEnums %}
           <tr>
-            <td><a class='show_enum_detail' id = {{enum.type.id}} title={{enum.name}}>{{enum.name}}</a></td>
+            <td><a class='show_child_enum_detail' id = {{enum.type.id}} val={{cur_branch.id}} title={{enum.name}}>{{enum.name}}</a></td>
           </tr>
         {% endfor %}
      </tbody>
@@ -32,7 +32,7 @@
      <tbody>
         {% for message in cur_protocol.nestMessage %}
           <tr>
-            <td><a class='show_message_detail' id = {{message.type.id}} title={{message.name}}>{{message.name}}</a></td>
+            <td><a class='show_child_message_detail' id={{message.type.id}} val={{cur_branch.id}} title={{message.name}}>{{message.name}}</a></td>
           </tr>
         {% endfor %}
      </tbody>
@@ -72,47 +72,52 @@ $(document).ready(function() {
 	$(".show_relate_protocol_detail").unbind('click').click(function(e) {
 		e.preventDefault();
 		
-		var protocol_id = $(this).parent().attr('id');
+      var branch_key = $(this).attr('val');
+		var protocol_key = $(this).parent().attr('id');
 		var parent_url = '{% url "protocol_detail_parent" %}';
-		var url = parent_url + protocol_id;
+		var url = parent_url + branch_key + "/" + protocol_key;
 		var dtitle = "协议-" + $(this).parent().attr('title');
 		console.log(url)
  		BootstrapDialog.show({
- 			  title:dtitle,
-		    message: $('<div></div>').load(url)
+ 			   title:dtitle,
+            size: BootstrapDialog.SIZE_WIDE,
+		      message: $('<div></div>').load(url)
 		 }); 
 		
 
 		return false;
 	});
-   $(".show_message_detail").unbind('click').click(function(e) {
+   $(".show_child_message_detail").unbind('click').click(function(e) {
       e.preventDefault();
       
+      var branch_key = $(this).attr('val');
       var message_key = $(this).attr('id');
       var parent_url = '{% url "message_detail_parent" %}';
-      var url = parent_url + message_key;
-      var dtitle = "信息-" + $(this).attr('title');
+      var url = parent_url + branch_key + "/" + message_key;
+      var dtitle = "结构-" + $(this).attr('title');
       console.log(url)
       BootstrapDialog.show({
-          title:dtitle,
-          message: $('<div></div>').load(url)
+            title:dtitle,
+            size: BootstrapDialog.SIZE_WIDE,
+            message: $('<div></div>').load(url)
        }); 
       
 
       return false;
    });
    
-   $(".show_enum_detail").unbind('click').click(function(e) {
+   $(".show_child_enum_detail").unbind('click').click(function(e) {
       e.preventDefault();
       
-      var segment_id = $(this).attr('id');
-      var parent_url = '{% url "protocol_detail_parent" %}';
-      var url = parent_url + segment_id;
+      var branch_key = $(this).attr('val');
+      var enum_key = $(this).attr('id');
+      var parent_url = '{% url "enum_detail_parent" %}';
+      var url = parent_url + branch_key + "/" + enum_key;
       var dtitle = "枚举-" + $(this).attr('title');
       console.log(url)
       BootstrapDialog.show({
-          title:dtitle,
-           message: $('<div></div>').load(url)
+            title:dtitle,
+            message: $('<div></div>').load(url)
        }); 
       
 

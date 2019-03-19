@@ -3,7 +3,6 @@ from stat import ST_MTIME
 import os
 import pickle
 
-
 class summary_info:
     def __init__(self):
         self.path = ""
@@ -30,8 +29,8 @@ def read_file_summary(summary_path):
     return file_summary
 
 
-def generate_file_sumary(folder_path, suffixs):
-    file_sumary = {}
+def generate_file_summary(folder_path, suffixs):
+    file_summary = {}
     onlyfiles = [
         f for f in os.listdir(folder_path)
         if os.path.isfile(os.path.join(folder_path, f))
@@ -40,14 +39,15 @@ def generate_file_sumary(folder_path, suffixs):
         file_path = os.path.join(folder_path, f)
         file_name = os.path.basename(f)
         file_name, file_suffix = os.path.splitext(file_name)
+        file_suffix = str(file_suffix)[1:]
         for suffix in suffixs:
             if file_suffix == suffix:
                 info = summary_info()
                 info.time = os.stat(file_path)[ST_MTIME]
                 info.path = file_path
-                file_sumary[file_name] = info
+                file_summary[file_name] = info
 
-    return file_sumary
+    return file_summary
 
 
 def compare_file_summary(cur_summary, last_summary):
