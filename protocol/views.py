@@ -109,6 +109,7 @@ def branch_export(request, branch_id):
         export_history.save()
 
         lock = Lock(lock_owner="export_" + cur_branch.title)
+        lock.save()
         try:
             helper.exporter(cur_branch.project, cur_branch)
             export_history.status = 2

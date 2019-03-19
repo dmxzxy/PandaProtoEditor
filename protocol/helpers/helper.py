@@ -61,4 +61,4 @@ def exporter(project, branch):
     export_path = branch_path + '/export/'
     if not os.path.exists(export_path):
         os.makedirs(export_path)
-    exporthelper.export(export_path)
+    exporthelper.export(branch, export_path)
