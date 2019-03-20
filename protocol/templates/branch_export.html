@@ -77,6 +77,12 @@
 			  {% endfor %}
 		   </tbody>
 		</table>
+
+		<div class='text-right' >
+			<a  href="{% url 'branch_download' cur_branch.id %}" class="btn btn-primary btn-large btn_120px">
+				下载lua
+			</a>
+		</div>
 	</div>
 	
 <script>

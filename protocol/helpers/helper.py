@@ -1,11 +1,15 @@
+# -*- coding: utf-8 -*-
 
 import os
 import time
 import svnhelper
 import projecthelper
+import zipfile
+
 from synchelper import synchelper
 from exporthelper import exporthelper
 from synchelper.summary_tools import *
+from protocol.helpers.panpbtool.utils import utils
 
 def __getDir(branch):
     branch_path = projecthelper.get_branch_path(branch.id)
@@ -54,7 +58,7 @@ def syncer(project, branch, force):
     end = time.time()
     print "sync cost time", end-start
 
-def exporter(project, branch):
+def exporter(project, branch, version):
     branch_path = projecthelper.get_branch_path(branch.id)
     if not os.path.exists(branch_path):
         os.makedirs(branch_path)
@@ -62,3 +66,29 @@ def exporter(project, branch):
     if not os.path.exists(export_path):
         os.makedirs(export_path)
     exporthelper.export(branch, export_path)
+    
+    file_version = open(export_path + '/lua/'+ 'protocol_version.txt','w')    
+    file_version.write(version)
+    file_version.close()
+
+def zipExporter(project, branch):
+    the_zip_file = "config_lua.zip"
+    branch_path = projecthelper.get_branch_path(branch.id)
+    the_export_path = branch_path + '/export/'
+
+    zip_archive_path = the_export_path + '/archive/'
+    if not os.path.exists(zip_archive_path):
+        os.mkdir(zip_archive_path) 
+    
+    file_zip = zipfile.ZipFile(zip_archive_path+the_zip_file,'w',zipfile.ZIP_DEFLATED) 
+
+    the_lua_path = str(the_export_path + '/lua/')
+    filenames = utils.get_file_list(the_lua_path, ['lua'])
+    for filename in filenames: 
+        tozipfile = os.path.relpath(filename, the_lua_path)  
+        file_zip.write(filename, tozipfile) 
+     
+    file_zip.write(the_lua_path + 'protocol_version.txt', 'protocol_version.txt') 
+    file_zip.close()
+
+    return zip_archive_path+the_zip_file

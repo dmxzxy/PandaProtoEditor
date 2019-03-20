@@ -13,6 +13,8 @@ urlpatterns = [
     url(r'^project/branch/export/(?P<branch_id>[0-9]+)/$', views.branch_export, name='branch_export'),
     url(r'^project/branch/sync/(?P<branch_id>[0-9]+)/$', views.branch_sync, name='branch_sync'),
     url(r'^project/branch/forcesync/(?P<branch_id>[0-9]+)/$', views.branch_force_sync, name='branch_force_sync'),
+
+    url(r'^project/branch/download/(?P<branch_id>[0-9]+)/$', views.branch_download, name='branch_download'),
  
     url(r'^protocol/$', views.index, name='protocol_detail_parent'),
     url(r'^protocol/(?P<branch_id>[0-9]+)/(?P<protocol_key>.*)$', views.protocol_detail, name='protocol_detail'),

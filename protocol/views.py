@@ -111,7 +111,7 @@ def branch_export(request, branch_id):
         lock = Lock(lock_owner="export_" + cur_branch.title)
         lock.save()
         try:
-            helper.exporter(cur_branch.project, cur_branch)
+            helper.exporter(cur_branch.project, cur_branch, export_version)
             export_history.status = 2
             export_history.save(update_fields=['status'])
         except Exception, e:
@@ -278,3 +278,25 @@ def module_detail(request, branch_id, module_id):
             'enums': enums,
         })
 
+
+def branch_download(request, branch_id):
+    cur_branch = get_object_or_404(ProjectBranch, pk=branch_id)
+    the_file_path = helper.zipExporter(cur_branch.project, cur_branch)
+    the_file_name = os.path.basename(the_file_path)
+
+    def file_iterator(file_path, chunk_size=512):
+        with open(file_path,'rb') as f:
+            while True:
+                c = f.read(chunk_size)
+                if c:
+                    yield c
+                else:
+                    break
+
+    file_size = os.path.getsize(the_file_path)
+    print 'file size:' + str(file_size)
+    response = StreamingHttpResponse(file_iterator(the_file_path))
+    response['Content-Type'] = 'application/octet-stream'
+    response['Content-Disposition'] = 'attachment;filename="{0}"'.format(the_file_name)
+    response['Content-Length'] = file_size
+    return response
