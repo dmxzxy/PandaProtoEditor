@@ -7,11 +7,13 @@
         <!-- Sidebar -->
         <div id="sidebar-wrapper">
             <ul class="sidebar-nav">
+                <li>
+                
+                </li>
+
                 <li class="sidebar-brand">
-                    <a href="#">
-						<a href="{% url 'branch_help' cur_branch.id %}">
-						    {{ cur_branch.title }}
-						</a>
+                    <a href="{% url 'index'%}">
+						<span class="glyphicon glyphicon-off"></span>{{ cur_branch.title }}
                     </a>
                 </li>
                 
@@ -31,10 +33,11 @@
                 =>
                 {% endif %}
 				
-				{{ module.desc }}
+				{{ module.name }}
 				
 				</a></li>
 				{% endfor %}
+
                 
 				<li><p/></li>
 				<li>

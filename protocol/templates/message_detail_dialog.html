@@ -3,10 +3,25 @@
 <div><strong class="col-md-2">结构</strong><span>{{ cur_message.name }}</span></div>
 <div><strong class="col-md-2">模块</strong><span>{{ cur_message.module.name }}</span></div>
 {% if cur_message.nested %}
-<div><strong><span class="col-md-2">所属</strong><span><a class="show_nested_message_detail" id="{{ cur_message.nested.id }}" val="{{cur_branch.id}}">{{ cur_message.nested.name }}</a></span></div>
+<div><strong><span class="col-md-2">所属</strong><span><a class="show_nested_message_detail" id="{{ cur_message.nested.fullname }}" val="{{cur_branch.id}}">{{ cur_message.nested.name }}</a></span></div>
 {% endif %}
 <div><strong class="col-md-2">描述 </strong><span>{{ cur_message.desc }}</span></div>
 </div>
+
+{% if cur_message.childmessages %}
+<div>
+  <table id="segment_lists" class="table table-hover table-condensed">
+    <caption>子结构</caption>
+     <tbody>
+        {% for message in cur_message.childmessages %}
+          <tr>
+            <td><a class='show_child_message_detail' id={{message.fullname}} val={{cur_branch.id}} title={{message.name}}>{{message.name}}</a></td>
+          </tr>
+        {% endfor %}
+     </tbody>
+  </table>
+</div>
+{% endif %}
 
 <hr/>
 
@@ -45,7 +60,7 @@ $(document).ready(function() {
       var branch_key = $(this).attr('val');
       var message_key = $(this).attr('id');
       var parent_url = '{% url "message_detail_parent" %}';
-      var url = parent_url + branch_key + message_key;
+      var url = parent_url + branch_key + "/" + message_key;
       var dtitle = "结构-" + $(this).attr('title');
       console.log(url)
       BootstrapDialog.show({

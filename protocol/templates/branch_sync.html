@@ -146,7 +146,7 @@ $(document).ready(function() {
 		btn_force_export.button('loading');
 		
 	    $.post({
-	        url: '{% url 'branch_sync' cur_branch.id %}',
+	        url: '{% url 'branch_force_sync' cur_branch.id %}',
 	        data: pack_data,
 	        success: function() {
 	        	BootstrapDialog.alert({

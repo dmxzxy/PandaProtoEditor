@@ -168,24 +168,52 @@ def branch_sync(request, branch_id):
         context['history_list'] = SyncHistory.objects.filter(project=cur_branch).order_by('-timestamp')[:10]
         return render(request, 'branch_sync.html', context)
 
+def branch_force_sync(request, branch_id):
+    cur_branch = get_object_or_404(ProjectBranch, pk=branch_id)
+    if request.method == 'POST':
+
+        lock = Lock.objects.first()
+        if lock:
+            raise Exception('Project is Locking.Wait until locking done')
+
+        sync_history = SyncHistory(project=cur_branch, status=1)
+        sync_history.save()
+
+        lock = Lock(lock_owner="sync_proto_"+cur_branch.title)
+        lock.save()
+        try:
+            helper.syncer(cur_branch.project, cur_branch, True)
+            sync_history.status = 2
+            sync_history.save(update_fields=['status'])
+        except Exception, e:
+            sync_history.status = 3
+            sync_history.save(update_fields=['status'])
+            raise e
+        finally:
+            lock.delete()
+
+        return HttpResponse("<h1>Sync successfully .</h1>")
+    else:
+        context = {}
+        context['cur_branch'] = cur_branch
+        modules = Module.objects.filter(project=cur_branch)
+        context['modules'] = modules
+        context['need_update'] = helper.testSync(cur_branch.project, cur_branch)
+        context['message'] = Message.objects.filter(module__in=modules).order_by('-timestamp')
+        context['history_list'] = SyncHistory.objects.filter(project=cur_branch).order_by('-timestamp')[:10]
+        return render(request, 'branch_sync.html', context)
+
 
 def protocol_detail(request, branch_id, protocol_key):
     cur_branch = get_object_or_404(ProjectBranch, pk=branch_id)
     cur_message = get_object_or_404(Message, module__project=cur_branch, fullname=protocol_key)
     cur_protocol = get_object_or_404(Protocol, message=cur_message)
     cur_module = cur_message.module
-    # innerEnums = Enum.objects.filter(belong=cur_protocol)
-    # innerCustomTypes = CustomType.objects.filter(belong=cur_protocol)
-    # if len(innerEnums) > 0:
-    #     cur_protocol.innerEnums = innerEnums
-    # if len(innerCustomTypes) > 0:
-    #     cur_protocol.innerCustomTypes = innerCustomTypes
-    # segments = Segment.objects.filter(protocol=cur_protocol)
-
-    # cur_protocol_ext = protocolExtension.objects.get(
-    #     protocol_id=cur_protocol.protocol_id)
-    # cur_protocol.type = cur_protocol_ext.protocol_type
     fields = Field.objects.filter(message=cur_message).order_by('number')
+
+    childmessages = Message.objects.filter(nested=cur_message)
+    if len(childmessages) > 0:
+        cur_protocol.childmessages = childmessages
     return render(
         request, 'protocol_detail_dialog.html', {
             'cur_branch': cur_branch,
@@ -200,6 +228,11 @@ def message_detail(request, branch_id, message_key):
     cur_message = get_object_or_404(Message, module__project=cur_branch, fullname=message_key)
     cur_module = cur_message.module
     fields = Field.objects.filter(message=cur_message).order_by('number')
+    
+    childmessages = Message.objects.filter(nested=cur_message)
+    if len(childmessages) > 0:
+        cur_message.childmessages = childmessages
+
     return render(
         request, 'message_detail_dialog.html', {
             'cur_branch': cur_branch,

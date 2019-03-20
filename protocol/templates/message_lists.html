@@ -14,7 +14,7 @@
                 <td class="show_message_detail">{{ message.name }}</td>
                 <td class="show_message_detail">{{ message.desc }}</td>
                 {% if message.nested %}
-                <td class="show_message_belong_detail" id="{{message.nested.id}}" val="{{cur_branch.id}}" name = "{{ message.nested.name }}"><a>{{ message.nested.name }}</a></td>
+                <td class="show_message_belong_detail" id="{{message.nested.fullname}}" val="{{cur_branch.id}}" name = "{{ message.nested.name }}"><a>{{ message.nested.name }}</a></td>
                 {% else %}
                 <td class="show_message_detail">无</td>
                 {% endif %}
@@ -34,9 +34,10 @@
             var parent_url = '{% url 'message_detail_parent' %}';
             var url = parent_url + branch_key + "/" + message_key;
             var dtitle = "结构-" + $(this).parent().attr('title');
-            // console.log(url)
+            console.log(url)
             BootstrapDialog.show({
                 title:dtitle,
+                size: BootstrapDialog.SIZE_WIDE,
                 message: $('<div></div>').load(url)
             }); 
             
@@ -46,14 +47,15 @@
         $(".show_message_belong_detail").click(function(e) {
             e.preventDefault();
             
-            var branch_key = $(this).parent().attr('val');
-            var message_key = $(this).parent().attr('id');
-            var parent_url = '{% url 'protocol_detail_parent' %}';
+            var branch_key = $(this).attr('val');
+            var message_key = $(this).attr('id');
+            var parent_url = '{% url 'message_detail_parent' %}';
             var url = parent_url + branch_key + "/" + message_key;
-            var dtitle = "协议-" + $(this).attr('name');
-            // console.log(url)
+            var dtitle = "结构-" + $(this).attr('name');
+            console.log(url)
             BootstrapDialog.show({
                 title:dtitle,
+                size: BootstrapDialog.SIZE_WIDE,
                 message: $('<div></div>').load(url)
             }); 
             

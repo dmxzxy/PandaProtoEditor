@@ -38,9 +38,9 @@ def testSync(project, branch):
 
     return False
 
-def syncer(project, branch):
+def syncer(project, branch, force):
     start = time.time()
-    if testSync(project, branch):
+    if testSync(project, branch) or force:
         sync_dir = __getDir(branch)
         try:
             synchelper.sync(project, branch, sync_dir)

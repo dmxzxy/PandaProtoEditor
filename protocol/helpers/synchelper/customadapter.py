@@ -47,8 +47,8 @@ class translater():
     
     def _dotrans_allmessagefields(self, message_data):
         message = get_object_or_404(Message, module__project=self.branch, fullname=message_data.fullname)
-        for message_data in message_data.nested_messages:
-            self._dotrans_allmessagefields(message_data)
+        for child_message_data in message_data.nested_messages:
+            self._dotrans_allmessagefields(child_message_data)
         for field_data in message_data.fields:
             self._dotrans_messagefield(message, field_data)
 
