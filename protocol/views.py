@@ -147,7 +147,7 @@ def branch_sync(request, branch_id):
         lock = Lock(lock_owner="sync_proto_"+cur_branch.title)
         lock.save()
         try:
-            helper.syncer(cur_branch.project, cur_branch)
+            helper.syncer(cur_branch.project, cur_branch, False)
             sync_history.status = 2
             sync_history.save(update_fields=['status'])
         except Exception, e:
