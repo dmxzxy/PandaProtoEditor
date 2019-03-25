@@ -259,7 +259,7 @@ def module_detail(request, branch_id, module_id):
             'cur_branch': cur_branch,
             'modules': modules,
             'protocols': protocols,
-            'messages': messages.exclude(pk__in=protocols.values_list('message')),
+            'messages': messages.exclude(pk__in=protocols.values_list('message')).order_by('name'),
             'enums': enums,
         })
     else:
@@ -274,7 +274,7 @@ def module_detail(request, branch_id, module_id):
             'cur_module': cur_module,
             'modules': modules,
             'protocols': protocols,
-            'messages': messages,
+            'messages': messages.exclude(pk__in=protocols.values_list('message')).order_by('name'),
             'enums': enums,
         })
 
