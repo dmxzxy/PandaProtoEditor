@@ -53,3 +53,9 @@ def get_branch_path(branch_id):
     project = branch.project
     branch_path = _get_temp_path() + project.title + '/' + branch.title + '/'
     return branch_path
+
+def get_branch_log_path(branch_id):
+    branch = get_object_or_404(ProjectBranch, pk=branch_id)
+    project = branch.project
+    branch_log_path = _get_temp_path() + project.title + '/' + branch.title + '/log/'
+    return branch_log_path

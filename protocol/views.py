@@ -19,6 +19,50 @@ from protocol.models import *
 import utils
 from protocol.helpers import helper
 from protocol.helpers import projecthelper
+import base64
+
+def do_branch_export(cur_branch, version):
+    lock = Lock.objects.first()
+    if lock:
+        raise Exception('Project is Locking.Wait until locking done')
+
+    export_version = version
+    export_history = ExportHistory(project=cur_branch, version=export_version, status=1)
+    export_history.save()
+
+    lock = Lock(lock_owner="export_" + cur_branch.title)
+    lock.save()
+    try:
+        helper.exporter(cur_branch.project, cur_branch, export_history, export_version)
+        export_history.status = 2
+        export_history.save(update_fields=['status'])
+    except Exception, e:
+        export_history.status = 3
+        export_history.save(update_fields=['status'])
+        raise e
+    finally:
+        lock.delete()
+
+def do_branch_sync(cur_branch, bForce):
+    lock = Lock.objects.first()
+    if lock:
+        raise Exception('Project is Locking.Wait until locking done')
+
+    sync_history = SyncHistory(project=cur_branch, status=1)
+    sync_history.save()
+
+    lock = Lock(lock_owner="sync_proto_"+cur_branch.title)
+    lock.save()
+    try:
+        helper.syncer(cur_branch.project, cur_branch, sync_history, bForce)
+        sync_history.status = 2
+        sync_history.save(update_fields=['status'])
+    except Exception, e:
+        sync_history.status = 3
+        sync_history.save(update_fields=['status'])
+        raise e
+    finally:
+        lock.delete()
 
 # Create your views here.
 def index(request):
@@ -31,6 +75,84 @@ def index(request):
         })
     return render(request, 'index.html', {'projects': projects})
 
+def download_proto(request, url_string):
+    if request.method == 'GET':
+        realUrl = base64.b64decode(url_string)
+        print("download ", realUrl)
+
+        branch_id = -1
+        for branch in ProjectBranch.objects.all():
+            fullUrl = branch.project.urlbase + branch.proto_url
+            fullUrl = fullUrl.lower()
+            if fullUrl.find(realUrl.lower()) >= 0:
+                branch_id = branch.pk
+                break
+
+        cur_branch = get_object_or_404(ProjectBranch, pk=branch_id)
+        the_file_path = helper.zipExporter(cur_branch.project, cur_branch)
+        the_file_name = os.path.basename(the_file_path)
+
+        def file_iterator(file_path, chunk_size=512):
+            with open(file_path,'rb') as f:
+                while True:
+                    c = f.read(chunk_size)
+                    if c:
+                        yield c
+                    else:
+                        break
+
+        file_size = os.path.getsize(the_file_path)
+        print 'file size:' + str(file_size)
+        response = StreamingHttpResponse(file_iterator(the_file_path))
+        response['Content-Type'] = 'application/octet-stream'
+        response['Content-Disposition'] = 'attachment;filename="{0}"'.format(the_file_name)
+        response['Content-Length'] = file_size
+        return response
+
+    else:
+        return HttpResponse("<h1>Invalid request.</h1>")
+
+
+def export_download_proto(request, url_string):
+    if request.method == 'GET':
+        realUrl = base64.b64decode(url_string)
+        print("download ", realUrl)
+
+        branch_id = -1
+        for branch in ProjectBranch.objects.all():
+            fullUrl = branch.project.urlbase + branch.proto_url
+            fullUrl = fullUrl.lower()
+            if fullUrl.find(realUrl.lower()) >= 0:
+                branch_id = branch.pk
+                break
+
+        cur_branch = get_object_or_404(ProjectBranch, pk=branch_id)
+
+        do_branch_sync(cur_branch, True)
+        do_branch_export(cur_branch, datetime.now().strftime('%Y-%m-%d-%H-%M-%S'))
+
+        the_file_path = helper.zipExporter(cur_branch.project, cur_branch)
+        the_file_name = os.path.basename(the_file_path)
+
+        def file_iterator(file_path, chunk_size=512):
+            with open(file_path,'rb') as f:
+                while True:
+                    c = f.read(chunk_size)
+                    if c:
+                        yield c
+                    else:
+                        break
+
+        file_size = os.path.getsize(the_file_path)
+        print 'file size:' + str(file_size)
+        response = StreamingHttpResponse(file_iterator(the_file_path))
+        response['Content-Type'] = 'application/octet-stream'
+        response['Content-Disposition'] = 'attachment;filename="{0}"'.format(the_file_name)
+        response['Content-Length'] = file_size
+        return response
+
+    else:
+        return HttpResponse("<h1>Invalid request.</h1>")
 
 def project_create(request):
     if request.method == 'POST':
@@ -96,30 +218,14 @@ def branch_help(request, branch_id):
         })
 
 
+
 def branch_export(request, branch_id):
     cur_branch = get_object_or_404(ProjectBranch, pk=branch_id)
     if request.method == 'POST':
-
-        lock = Lock.objects.first()
-        if lock:
-            raise Exception('Project is Locking.Wait until locking done')
-
-        export_version = request.POST['export_version']
-        export_history = ExportHistory(project=cur_branch, version=export_version, status=1)
-        export_history.save()
-
-        lock = Lock(lock_owner="export_" + cur_branch.title)
-        lock.save()
         try:
-            helper.exporter(cur_branch.project, cur_branch, export_version)
-            export_history.status = 2
-            export_history.save(update_fields=['status'])
+            do_branch_export(cur_branch, request.POST['export_version'])
         except Exception, e:
-            export_history.status = 3
-            export_history.save(update_fields=['status'])
             raise e
-        finally:
-            lock.delete()
 
         return HttpResponse("<h1>Export successfully .</h1>")
     else:
@@ -136,26 +242,10 @@ def branch_export(request, branch_id):
 def branch_sync(request, branch_id):
     cur_branch = get_object_or_404(ProjectBranch, pk=branch_id)
     if request.method == 'POST':
-
-        lock = Lock.objects.first()
-        if lock:
-            raise Exception('Project is Locking.Wait until locking done')
-
-        sync_history = SyncHistory(project=cur_branch, status=1)
-        sync_history.save()
-
-        lock = Lock(lock_owner="sync_proto_"+cur_branch.title)
-        lock.save()
         try:
-            helper.syncer(cur_branch.project, cur_branch, False)
-            sync_history.status = 2
-            sync_history.save(update_fields=['status'])
+            do_branch_sync(cur_branch, False)
         except Exception, e:
-            sync_history.status = 3
-            sync_history.save(update_fields=['status'])
             raise e
-        finally:
-            lock.delete()
 
         return HttpResponse("<h1>Sync successfully .</h1>")
     else:
@@ -171,26 +261,10 @@ def branch_sync(request, branch_id):
 def branch_force_sync(request, branch_id):
     cur_branch = get_object_or_404(ProjectBranch, pk=branch_id)
     if request.method == 'POST':
-
-        lock = Lock.objects.first()
-        if lock:
-            raise Exception('Project is Locking.Wait until locking done')
-
-        sync_history = SyncHistory(project=cur_branch, status=1)
-        sync_history.save()
-
-        lock = Lock(lock_owner="sync_proto_"+cur_branch.title)
-        lock.save()
         try:
-            helper.syncer(cur_branch.project, cur_branch, True)
-            sync_history.status = 2
-            sync_history.save(update_fields=['status'])
+            do_branch_sync(cur_branch, True)
         except Exception, e:
-            sync_history.status = 3
-            sync_history.save(update_fields=['status'])
             raise e
-        finally:
-            lock.delete()
 
         return HttpResponse("<h1>Sync successfully .</h1>")
     else:

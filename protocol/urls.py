@@ -5,6 +5,9 @@ from . import views
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),
+    url(r'^download/(?P<url_string>.*)/$', views.download_proto, name='download_proto'),
+    url(r'^export/download/(?P<url_string>.*)/$', views.export_download_proto, name='export_download_proto'),
+    
     url(r'^project/create/$', views.project_create, name='project_create'),
     url(r'^project/create/branch/$', views.project_create_branch, name='project_create_branch'),
     url(r'^project/branch/(?P<branch_id>[0-9]+)/$', views.branch_detail, name='branch_detail'),

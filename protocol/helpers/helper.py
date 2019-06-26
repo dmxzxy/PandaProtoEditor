@@ -5,6 +5,7 @@ import time
 import svnhelper
 import projecthelper
 import zipfile
+import loghelper.logger as logger
 
 from synchelper import synchelper
 from exporthelper import exporthelper
@@ -42,8 +43,13 @@ def testSync(project, branch):
 
     return False
 
-def syncer(project, branch, force):
+def syncer(project, branch, history, force):
     start = time.time()
+    loggerPath = projecthelper.get_branch_log_path(branch.id)
+    if not os.path.exists(loggerPath):
+        os.makedirs(loggerPath)
+    logger.start(loggerPath, history.pk)
+
     if testSync(project, branch) or force:
         sync_dir = __getDir(branch)
         try:
@@ -55,10 +61,17 @@ def syncer(project, branch, force):
         except Exception, e:
             raise e
     
+    logger.flush()
     end = time.time()
     print "sync cost time", end-start
 
-def exporter(project, branch, version):
+def exporter(project, branch, history, version):
+    start = time.time()
+    loggerPath = projecthelper.get_branch_log_path(branch.id)
+    if not os.path.exists(loggerPath):
+        os.makedirs(loggerPath)
+    logger.start(loggerPath, history.pk)
+
     branch_path = projecthelper.get_branch_path(branch.id)
     if not os.path.exists(branch_path):
         os.makedirs(branch_path)
@@ -70,6 +83,9 @@ def exporter(project, branch, version):
     file_version = open(export_path + '/lua/'+ 'protocol_version.txt','w')    
     file_version.write(version)
     file_version.close()
+    logger.flush()
+    end = time.time()
+    print "export cost time", end-start
 
 def zipExporter(project, branch):
     the_zip_file = "config_lua.zip"
