@@ -47,18 +47,27 @@ class translater():
             fields = Field.objects.filter(message=message.message)
             for field in fields:
                 self.__translate_field(message_data, field)
+
+            messages = Message.objects.filter(nested=message.message)
+            for msg in messages:
+                self.__translate_message(message_data, msg, False)
         else:
-            location = "message_"+message.fullname
-            message_data = belong.add_message(
-                name = message.name,
-                fullname = message.fullname,
-                namespace = belong.fullname,
-                location = location
-            )
-            project_data.add_comment(location, message.desc)
-            fields = Field.objects.filter(message=message)
-            for field in fields:
-                self.__translate_field(message_data, field)
+            if message.nested == None or message.nested.fullname == belong.fullname:
+                location = "message_"+message.fullname
+                message_data = belong.add_message(
+                    name = message.name,
+                    fullname = message.fullname,
+                    namespace = belong.fullname,
+                    location = location
+                )
+                project_data.add_comment(location, message.desc)
+                fields = Field.objects.filter(message=message)
+                for field in fields:
+                    self.__translate_field(message_data, field)
+
+                messages = Message.objects.filter(nested=message)
+                for msg in messages:
+                    self.__translate_message(message_data, msg, False)
         
     def __translate_module(self, module):
         project_data = self.project_data
