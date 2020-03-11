@@ -90,6 +90,24 @@ $(document).ready(function() {
 
       return false;
    });
+   
+   $(".show_child_enum_detail").unbind('click').click(function(e) {
+      e.preventDefault();
+      
+      var branch_key = $(this).attr('val');
+      var enum_key = $(this).attr('id');
+      var parent_url = '{% url "enum_detail_parent" %}';
+      var url = parent_url + branch_key + "/" + enum_key;
+      var dtitle = "枚举-" + $(this).attr('title');
+      console.log(url)
+      BootstrapDialog.show({
+            title:dtitle,
+            message: $('<div></div>').load(url)
+       }); 
+      
+
+      return false;
+   });
 });
 
         

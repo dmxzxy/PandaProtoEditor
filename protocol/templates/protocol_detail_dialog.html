@@ -95,6 +95,7 @@ $(document).ready(function() {
       var parent_url = '{% url "message_detail_parent" %}';
       var url = parent_url + branch_key + "/" + message_key;
       var dtitle = "结构-" + $(this).attr('title');
+      console.log("show_child_message_detail")
       console.log(url)
       BootstrapDialog.show({
             title:dtitle,
