@@ -1,0 +1,66 @@
+{% load segtype %}
+<table id="enum_lists" class="table table-hover">
+   <thead>
+      <tr>
+         <th>名字</th>
+         <th>描述</th>
+         <th>所属协议</th>
+         <th class='col-sm-3'>  </th>
+      </tr>
+   </thead>
+   <tbody>
+   	{% for enum in enums %}
+      <tr id="{{ enum.fullname }}" val ="{{cur_branch.id}}" title="{{ enum.name }}">
+         <td class="show_enum_detail">{{ enum.name }}</td>
+         <td class="show_enum_detail">{{ enum.desc }}</td>
+         {% if enum.nested %}
+         <td class="show_enum_belong_detail" id="{{enum.nested.fullname}}" val="{{cur_branch.id}}"><a>{{ enum.nested.name }}</a></td>
+         {% else %}
+         <td class="show_enum_detail">无</td>
+         {% endif %}
+      </tr>
+	  {% endfor %}
+   </tbody>
+</table>
+
+<script>
+$(document).ready(function() {
+	$(".show_enum_detail").click(function(e) {
+		e.preventDefault();
+		
+        var branch_key = $(this).parent().attr('val');
+        var enum_key = $(this).parent().attr('id');
+		var parent_url = '{% url 'enum_detail_parent' %}';
+		var url = parent_url + branch_key + "/" + enum_key;
+		var dtitle = "枚举-" + $(this).parent().attr('title');
+		console.log(url)
+ 		BootstrapDialog.show({
+ 			 title:dtitle,
+		     message: $('<div></div>').load(url)
+		 }); 
+		
+
+		return false;
+	});
+
+   $(".show_enum_belong_detail").click(function(e) {
+        e.preventDefault();
+        
+        var branch_key = $(this).attr('val');
+        var message_key = $(this).attr('id');
+        var parent_url = '{% url 'message_detail_parent' %}';
+		var url = parent_url + branch_key + "/" + message_key;
+        var dtitle = "协议-" + $(this).parent().attr('title');
+        console.log(url)
+        BootstrapDialog.show({
+            title:dtitle,
+            message: $('<div></div>').load(url)
+        }); 
+      
+
+      return false;
+   });
+});
+
+        
+</script>        

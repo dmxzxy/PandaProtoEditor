@@ -14,10 +14,12 @@ class baseadapter(object):
             )
             for enumvalue_index in range(0, len(enum_desc.value)):
                 enumvalue_desc = enum_desc.value[enumvalue_index]
+                print(enumvalue_desc)
                 enum.add_enumvalue(
                     name = enumvalue_desc.name, 
                     fullname = enum.fullname + '.' + enumvalue_desc.name,
                     namespace = enum.fullname,
+                    number = enumvalue_desc.number,
                     location = enum.location + [2, enumvalue_index]
                 )
     

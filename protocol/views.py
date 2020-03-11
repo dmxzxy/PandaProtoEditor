@@ -317,8 +317,19 @@ def message_detail(request, branch_id, message_key):
 
 
 def enum_detail(request, branch_id, enum_key):
+    print(branch_id, enum_key)
     cur_branch = get_object_or_404(ProjectBranch, pk=branch_id)
-    pass
+    cur_enum = get_object_or_404(Enum, module__project=cur_branch, fullname=enum_key)
+    cur_module = cur_enum.module
+    values = EnumValue.objects.filter(enum=cur_enum).order_by('number')
+
+    return render(
+        request, 'enum_detail_dialog.html', {
+            'cur_branch': cur_branch,
+            'cur_module': cur_module,
+            'cur_enum': cur_enum,
+            'values': values,
+        })
 
 
 def module_detail(request, branch_id, module_id):
